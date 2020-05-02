@@ -15,20 +15,26 @@
 </template>
 
 <script>
-// data: {
-//   activeName: 'msite'
-// }
+import { tabBus } from '../../eventbus/tab'
 export default {
   // eslint-disable-next-line vue/no-shared-component-data
   data () {
     return {
-      activeName: '/msite'
+      activeName: 'msite'
     }
+  },
+  mounted () {
+    tabBus.$on('changeTab', path => {
+      this.activeName = path
+    })
   },
   methods: {
     onChange (item) {
       // this.activeName = item
     }
+  },
+  beforeDestroy () {
+    tabBus.$off('changeTab')
   }
 }
 </script>

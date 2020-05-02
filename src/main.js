@@ -4,7 +4,8 @@ import router from './router'
 import store from './store'
 import 'plugins/vant'
 import 'assets/style/variable.less'
-
+import Fastclick from 'fastclick'
+Fastclick.attach(document.body)
 Vue.config.productionTip = false
 
 new Vue({

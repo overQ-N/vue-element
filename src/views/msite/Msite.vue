@@ -81,6 +81,7 @@
 
 <script>
 import { request } from 'request'
+import { tabBus } from '../../eventbus/tab'
 export default {
   data () {
     return {
@@ -184,8 +185,12 @@ export default {
       this.$router.push('/')
     },
     handleLeftClick () {
+      tabBus.$emit('changeTab', 'search')
       this.$router.push('/search')
     }
+  },
+  beforeDestroy () {
+    tabBus.$off('changeTab')
   }
 }
 </script>
