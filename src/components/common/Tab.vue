@@ -1,7 +1,7 @@
 <template>
   <div>
-    <van-tabbar v-model="activeName" @change="onChange">
-      <van-tabbar-item name="msite">
+    <van-tabbar v-model="activeName" @change="onChange" class="tabbar">
+      <van-tabbar-item name="msite" to="/msite">
         <template #icon>
           <i class="iconfont icon-SSS-copy"></i>
         </template>
@@ -22,17 +22,20 @@ export default {
   // eslint-disable-next-line vue/no-shared-component-data
   data () {
     return {
-      activeName: 'msite'
+      activeName: '/msite'
     }
   },
   methods: {
     onChange (item) {
-      this.activeName = item
+      // this.activeName = item
     }
   }
 }
 </script>
 
 <style scoped>
-
+.tabbar{
+  border-top: 1px solid #f0f0f0;
+  box-shadow: 0 2px 3px rgba(0,0,0.5);
+}
 </style>

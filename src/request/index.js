@@ -4,7 +4,7 @@ const instance1 = axios.create({
   baseURL: 'https://elm.cangdu.org',
   timeout: 15000
 })
-const request = (config) => {
+const request = function (config) {
   return instance1(config)
 }
 export {

@@ -1,7 +1,7 @@
 const state = () => ({
-  // return {
-  citySearchHistory: []
-  // }
+  citySearchHistory: [],
+  // 用户经纬度信息
+  geohash: ''
 })
 const actions = {
 
@@ -20,6 +20,9 @@ const mutations = {
   },
   clearCitySearchHistory (state) {
     state.citySearchHistory = []
+  },
+  setGeohash (state, data) {
+    state.geohash = data
   }
 }
 export default {

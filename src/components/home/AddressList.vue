@@ -33,8 +33,9 @@ export default {
         // 如果不是搜索记录的列表 点击存进搜索记录中
         this.$store.commit('user/setCitySearchHistory', item)
       }
+      console.log(item)
       this.$router.push({
-        path: '/msite', params: { geohash: item.geohash }
+        path: '/msite', query: { geohash: item.geohash }
       })
     },
     // 清空搜索记录
