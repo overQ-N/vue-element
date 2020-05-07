@@ -54,7 +54,9 @@ export default {
   },
   data () {
     return {
+      // 左侧滚动区选中的id
       activeNav: 1,
+      // 右侧滚动区选中的id
       activeSlide: 1
     }
   },
@@ -69,11 +71,14 @@ export default {
     }
   },
   methods: {
+    // 点击左侧滚动区
     navClick (item) {
       this.activeNav = item.id
     },
+    // 点击右侧滚动区
     slideClick (subItem) {
       this.activeSlide = subItem.id
+      this.$emit('restaurantCateIdChanged', subItem)
     }
   }
 }

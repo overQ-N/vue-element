@@ -6,7 +6,7 @@
       <!-- <van-dropdown-item v-model="value" :options="option" /> -->
       <van-dropdown-item :title="title">
         <!-- :activeNav='activeId' -->
-        <FoodSelectTree height='100vw'  :list='dropDowmItems'/>
+        <FoodSelectTree height='100vw'  :list='dropDowmItems'  @restaurantCateIdChanged='restaurantCateIdChanged'/>
       </van-dropdown-item>
       <van-dropdown-item :title="orderTitle" ref="orderRef">
         <FoodOrderBy @orderValueChange='orderValueChange'/>
@@ -16,7 +16,7 @@
       </van-dropdown-item>
     </van-dropdown-menu>
     <!-- 店铺列表 -->
-    <ShopList :dropdownValue='order'/>
+    <ShopList :dropdownValue='order' :restaurantCategoryId='restaurant_category_id'/>
   </div>
 </template>
 
@@ -40,6 +40,8 @@ export default {
       title: '',
       latitude: '',
       longitude: '',
+      // 餐馆分类id
+      restaurant_category_id: '',
       // 排序方式的标题
       orderTitle: '智能排序',
       // 排序方式,默认为4 智能排序
@@ -74,15 +76,8 @@ export default {
       })
       res.forEach(v => {
         v.value = v.id
-        // if (v.name === this.title) {
-        //   this.activeId = v.ids[0]
-        // }
-        // v.sub_categories.forEach(v1 => {
-        //   v1.id = v1._id
-        // })
         v.children = v.sub_categories
       })
-      console.log(res)
       // 获取激活状态的分类id
       this.dropDowmItems = res
     },
@@ -96,6 +91,11 @@ export default {
     // 子组件点击了筛选的确定按钮
     confirm () {
       this.$refs.chooseRef.toggle()
+    },
+    // 接收FoodSelectTree 子组件传过来的选中的餐馆分类id
+    restaurantCateIdChanged (item) {
+      this.title = item.name
+      this.restaurant_category_id = item.id
     }
   }
 }

@@ -51,6 +51,9 @@ export default {
     dropdownValue: {
       type: Number,
       default: 4
+    },
+    restaurantCategoryId: {
+      type: [Number, String]
     }
   },
   data () {
@@ -66,6 +69,7 @@ export default {
         limit: 20,
         // 餐馆分类id
         restaurant_category_id: 1,
+        restaurant_category_ids: [],
         // 排序方式
         order_by: this.dropdownValue
       },
@@ -110,6 +114,14 @@ export default {
     dropdownValue (newVal) {
       this.queryInfo.offset = 0
       this.queryInfo.order_by = newVal
+      this.shopList = []
+      this.getShopList()
+    },
+    // 监听餐铺id的变化
+    restaurantCategoryId (newVal) {
+      this.queryInfo.offset = 0
+      this.queryInfo.restaurant_category_ids = []
+      this.queryInfo.restaurant_category_ids.push(newVal)
       this.shopList = []
       this.getShopList()
     }
