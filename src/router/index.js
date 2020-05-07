@@ -6,6 +6,7 @@ const Msite = () => import('views/msite/Msite')
 const Search = () => import('views/search/Search')
 const Order = () => import('views/order/Order')
 const Profile = () => import('views/profile/Profile')
+const Food = () => import('views/food/Food')
 Vue.use(VueRouter)
 
 const routes = [
@@ -52,6 +53,11 @@ const routes = [
     meta: {
       isTab: true
     }
+  },
+  {
+    // 食品列表
+    path: '/food',
+    component: Food
   }
 ]
 

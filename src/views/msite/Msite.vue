@@ -15,7 +15,7 @@
     <van-swipe class="my-swipe" indicator-color="#007aff" :stop-propagation="false">
       <van-swipe-item>
         <van-grid :column-num="4" :border="false">
-          <van-grid-item v-for="food in foodList1" :key="food.id" :text="food.title">
+          <van-grid-item v-for="food in foodList.slice(0,8)" :key="food.id" :text="food.title" @click="foodItemClick(food)">
             <template #icon>
               <van-image :src="'https://fuss10.elemecdn.com/'+food.image_url"></van-image>
             </template>
@@ -24,7 +24,7 @@
       </van-swipe-item>
       <van-swipe-item>
         <van-grid :column-num="4" :border="false">
-          <van-grid-item v-for="food in foodList2" :key="food.id" :text="food.title">
+          <van-grid-item v-for="food in foodList.slice(8,foodList.length)" :key="food.id" :text="food.title" @click="foodItemClick(food)">
             <template #icon>
               <van-image :src="'https://fuss10.elemecdn.com/'+food.image_url"></van-image>
             </template>
@@ -43,45 +43,15 @@
       </van-dropdown-menu>
     </div>
     <!-- 店铺列表 -->
-    <van-list
-      class="shop-list"
-      v-model="loading"
-      :finished="finished"
-      :immediate-check='false'
-      :offset="100"
-      finished-text="没有更多了"
-      @load="onLoad"
-    >
-      <van-cell class="cell" v-for="item in shopList" :key="item.id">
-        <img :src="baseURL+'/img/'+item.image_path" alt />
-        <div class="shop-info cell-item">
-          <div class="shop-name">
-            <van-tag color="#ffd930" v-if="item.is_premium">品牌</van-tag>
-            <span class="shop-title">{{item.name}}</span>
-          </div>
-          <div class="shop-rate">
-            <van-rate v-model="item.rating" allow-half readonly size='10px' void-icon="star" void-color="#eee" />
-            <span class="shop-rate-num">{{item.rating}}</span>
-            月售{{item.recent_order_num}}单
-          </div>
-          <div>￥{{item.float_minimum_order_amount}}起送 / 配送费约￥{{item.float_delivery_fee}}</div>
-        </div>
-        <div class="diliver cell-item">
-          <div class='ticket'>保准票</div>
-          <div class="tag">
-            <span class="fengniao">峰鸟专送</span>
-            <span class="time">准时达</span>
-          </div>
-          <div class="distance">{{item.distance}} / <span>{{item.order_lead_time}}</span></div>
-        </div>
-      </van-cell>
-    </van-list>
+    <ShopList :dropdownValue='dropdownValue'/>
+
   </div>
 </template>
 
 <script>
 import { request } from 'request'
 import { tabBus } from '../../eventbus/tab'
+import ShopList from 'components/common/ShopList'
 export default {
   data () {
     return {
@@ -90,11 +60,9 @@ export default {
       // 详细地址
       detailAddress: '',
       // 食品列表
-      foodList1: [],
-      foodList2: [],
+      foodList: [],
       baseURL: '',
       dropdownValue: 4,
-      rate: 3.7,
       option: [
         { text: '起送价', value: 1 },
         { text: '配送速度', value: 2 },
@@ -102,27 +70,11 @@ export default {
         { text: '智能排序', value: 4 },
         { text: '距离最近', value: 5 },
         { text: '销量最高', value: 6 }
-      ],
-      // 请求商家信息的参数
-      queryInfo: {
-        latitude: '',
-        longitude: '',
-        // 跳过多少条数据
-        offset: 0,
-        // 请求的数据量
-        limit: 20,
-        // 餐馆分类id
-        restaurant_category_id: 1,
-        // 排序方式
-        order_by: 4
-      },
-      // 商铺信息列表
-      shopList: [],
-      loading: false,
-      finished: false
+      ]
+
     }
   },
-  components: {},
+  components: { ShopList },
   mounted () {
     this.geohash = this.$route.query.geohash
     // 如果没有经纬度信息,尝试从本地中获取
@@ -132,15 +84,6 @@ export default {
     this.getDetailAddress()
     this.getFoodList()
   },
-  watch: {
-    // 监听排序方式的改变
-    dropdownValue (newVal) {
-      this.queryInfo.offset = 0
-      this.queryInfo.order_by = newVal
-      this.shopList = []
-      this.getShopList()
-    }
-  },
   methods: {
     // 获取详细地址
     getDetailAddress () {
@@ -148,38 +91,16 @@ export default {
         url: '/v2/pois/' + this.geohash
       }).then(res => {
         this.detailAddress = res.data
-        this.queryInfo.longitude = this.detailAddress.longitude
-        this.queryInfo.latitude = this.detailAddress.latitude
         this.$store.commit('user/setGeohash', this.geohash)
-        this.getShopList()
       })
     },
     // 获取食品分类列表
     async getFoodList () {
       const res = await request({ url: '/v2/index_entry' })
-      this.foodList1 = res.data.slice(0, 8)
-      this.foodList2 = res.data.slice(8, res.data.length)
+      this.foodList = res.data
       this.baseURL = res.config.baseURL
     },
 
-    // 获取商家信息
-    async getShopList () {
-      const res = await request({ url: '/shopping/restaurants', params: this.queryInfo })
-      if (this.shopList.length === 0) {
-        this.shopList = res.data
-      } else {
-        this.shopList = this.shopList.concat(res.data)
-      }
-      this.loading = false
-    },
-    // 商家店铺列表下拉刷新
-    onLoad () {
-      this.queryInfo.offset += 20
-      this.getShopList()
-      if (this.shopList.length >= 100) {
-        this.finished = true
-      }
-    },
     // 去往城市列表页
     goHomePage () {
       this.$router.push('/')
@@ -187,6 +108,16 @@ export default {
     handleLeftClick () {
       tabBus.$emit('changeTab', 'search')
       this.$router.push('/search')
+    },
+    // 点击食品分类项,去往good页面
+    foodItemClick (food) {
+      this.$router.push({
+        path: '/food',
+        query: {
+          geohash: this.geohash,
+          title: food.title
+        }
+      })
     }
   },
   beforeDestroy () {
@@ -247,68 +178,4 @@ export default {
   }
 }
 
-.shop-list {
-  .cell {
-    .van-cell__value {
-      display: flex;
-      font-size: @font-small;
-      img {
-        width: 72px;
-        height: 72px;
-        display: block;
-      }
-      .cell-item{
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-      .shop-info {
-        padding-left:10px;
-        flex: 1;
-        .shop-name{
-          width:150px;
-           text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-          .shop-title{
-            font-size: 14px;
-            width:100%;
-            padding-left: 5px;
-            font-weight: 600;
-          }
-        }
-        .shop-rate-num{
-          -moz-transform: scale(.9);
-          transform: scale(.9);
-          margin-left: 3px;
-        }
-      }
-      .diliver{
-        align-items: flex-end;
-        transform: scale(.9);
-        .ticket{
-          color:#333;
-        }
-        .tag{
-          .fengniao{
-            background-color: @color-theme;
-            color:#fff;
-          }
-          .time{
-            border:1px solid @color-theme;
-            color:@color-theme;
-            margin-left: 3px;
-          }
-        }
-        .distance{
-          height: 20px;
-          span{
-            color:@color-theme;
-          }
-        }
-      }
-
-    }
-  }
-}
 </style>
