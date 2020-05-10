@@ -8,7 +8,7 @@
     finished-text="没有更多了"
     @load="onLoad"
   >
-    <van-cell class="cell" v-for="item in shopList" :key="item.id">
+    <van-cell class="cell" v-for="item in shopList" @click="goShop(item.id)" :key="item.id">
       <img :src="baseURL+'/img/'+item.image_path" alt />
       <div class="shop-info cell-item">
         <div class="shop-name">
@@ -107,6 +107,16 @@ export default {
       if (this.shopList.length >= 100) {
         this.finished = true
       }
+    },
+    // 点击食品列表，去往相应的店铺
+    goShop (id) {
+      this.$router.push({
+        path: '/shop',
+        query: {
+          geohash: this.geohash,
+          id
+        }
+      })
     }
   },
   watch: {

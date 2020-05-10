@@ -7,6 +7,7 @@ const Search = () => import('views/search/Search')
 const Order = () => import('views/order/Order')
 const Profile = () => import('views/profile/Profile')
 const Food = () => import('views/food/Food')
+const Shop = () => import('views/shop/Shop')
 Vue.use(VueRouter)
 
 const routes = [
@@ -23,7 +24,7 @@ const routes = [
     component: City
   },
   {
-    // 商铺首页
+    // 首页
     path: '/msite',
     component: Msite,
     meta: {
@@ -58,6 +59,11 @@ const routes = [
     // 食品列表
     path: '/food',
     component: Food
+  },
+  {
+    // 店铺页
+    path: '/shop',
+    component: Shop
   }
 ]
 

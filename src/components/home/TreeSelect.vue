@@ -37,7 +37,6 @@ export default {
           type
         }
       }).then(res => {
-        console.log(res)
         if (type === 'hot') this.setHotCities(res.data)
         if (type === 'group') this.setGroupCities(res.data)
       })
